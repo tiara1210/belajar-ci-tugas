@@ -12,6 +12,7 @@ class TransaksiController extends BaseController
     protected $apiKey;
     protected $transaction;
     protected $transaction_detail;
+    private $discount;
 
     function __construct()
     {
@@ -22,6 +23,7 @@ class TransaksiController extends BaseController
         $this->apiKey = env('COST_KEY');
         $this->transaction = new TransactionModel;
         $this->transaction_detail = new TransactionDetailModel;
+        $this->discount = (float) session()->get('diskon_nominal');
     }
 
     public function index()
@@ -36,7 +38,7 @@ class TransaksiController extends BaseController
         $this->cart->insert(array(
             'id'        => $this->request->getPost('id'),
             'qty'       => 1,
-            'price'     => $this->request->getPost('harga'),
+            'price'     => (float) $this->request->getPost('harga') - $this->discount,
             'name'      => $this->request->getPost('nama'),
             'options'   => array('foto' => $this->request->getPost('foto'))
         ));
@@ -163,8 +165,8 @@ class TransaksiController extends BaseController
                     'transaction_id' => $last_insert_id,
                     'product_id' => $value['id'],
                     'jumlah' => $value['qty'],
-                    'diskon' => 0,
-                    'subtotal_harga' => $value['qty'] * $value['price'],
+                    'diskon' => $this->discount,
+                    'subtotal_harga' => ($value['qty'] * $value['price']),
                     'created_at' => date("Y-m-d H:i:s"),
                     'updated_at' => date("Y-m-d H:i:s")
                 ];

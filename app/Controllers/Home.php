@@ -53,4 +53,10 @@ class Home extends BaseController
 
     return view('v_profile', $data);
     }
+
+    public function faq()
+    {
+        return view('v_faq'); // pastikan file ini ada: app/Views/v_faq.php
+    }
+
 }
